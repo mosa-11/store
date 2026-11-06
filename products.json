@@ -27,20 +27,6 @@
  },
  "products": [
   {
-   "id": "p7",
-   "title": "جوستك اكس بوكس سيريس",
-   "cat": "controllers",
-   "type": "Xbox",
-   "cond": "new",
-   "price": 85000,
-   "oldPrice": 0,
-   "stock": "in",
-   "featured": false,
-   "desc": "يد Xbox Series أصلية جديدة.",
-   "images": [],
-   "created": 1762340000000
-  },
-  {
    "id": "p8",
    "title": "سماعة PULSE 3D",
    "cat": "headsets",
@@ -118,5 +104,5 @@
    "color": "#f59e0b"
   }
  ],
- "updated": 1794007481007
+ "updated": 1794007483824
 }
