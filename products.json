@@ -27,25 +27,6 @@
  },
  "products": [
   {
-   "id": "p1",
-   "title": "بلايستيشن 5 سلم - نسخة الديسك",
-   "cat": "ps5",
-   "type": "Slim",
-   "cond": "new",
-   "price": 720000,
-   "oldPrice": 760000,
-   "stock": "in",
-   "featured": true,
-   "desc": "جهاز PS5 Slim جديد بالكرتونة مع يد DualSense أصلية، ذاكرة 1 تيرا.",
-   "images": [],
-   "created": 1762400000000,
-   "inst": {
-    "down": 200000,
-    "monthly": 90000,
-    "months": 6
-   }
-  },
-  {
    "id": "p2",
    "title": "بلايستيشن 5 فات مستعمل نظيف",
    "cat": "ps5",
@@ -224,5 +205,5 @@
    "color": "#f59e0b"
   }
  ],
- "updated": 1794007461856
+ "updated": 1794007464972
 }
