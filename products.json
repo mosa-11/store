@@ -25,22 +25,7 @@
   "repairOn": true,
   "tradeOn": true
  },
- "products": [
-  {
-   "id": "p8",
-   "title": "سماعة PULSE 3D",
-   "cat": "headsets",
-   "type": "",
-   "cond": "new",
-   "price": 120000,
-   "oldPrice": 0,
-   "stock": "in",
-   "featured": true,
-   "desc": "سماعة لاسلكية أصلية من سوني تدعم الصوت ثلاثي الأبعاد.",
-   "images": [],
-   "created": 1762330000000
-  }
- ],
+ "products": [],
  "cats": [
   {
    "id": "ps4",
@@ -104,5 +89,5 @@
    "color": "#f59e0b"
   }
  ],
- "updated": 1794007483824
+ "updated": 1794007548047
 }
