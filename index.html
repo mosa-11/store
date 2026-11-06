@@ -2334,18 +2334,29 @@ function vForm(){
   <div class="acts"><button class="btn gh" onclick="aTab='list';editing=null;route()">إلغاء</button><button class="btn" onclick="saveP()">حفظ المنتج</button></div></div>`;
 }
 function fileFields(e){const f=e.file||{};return `<div class="ibox" style="border-color:#0891b2"><b>📦 الملف</b>
-  <p class="note" style="margin:6px 0 10px">ارفع ملف لحد 50 ميغا (يتخزن بالمتجر)، أو للملفات الكبيرة حط رابط من Google Drive أو MEGA أو تيليكرام. اترك السعر 0 حتى يصير التحميل مجاني.</p>
-  <label class="btn gh full" style="margin-bottom:10px">⬆️ اختيار ملف PKG للرفع<input type="file" hidden onchange="pickFile(this.files[0])"></label>
+  <p class="note" style="margin:6px 0 10px">📁 <b>ملف صغير (لحد 50 ميغا):</b> ارفعه مباشرة من هنا.<br>📦 <b>ملف كبير (لحد 2 غيغا):</b> ارفعه على GitHub Releases مجاناً، وانسخ رابطه هنا.<br>☁️ <b>أكبر من هيج:</b> Google Drive أو MEGA أو تيليكرام وحط الرابط.<br>اترك السعر 0 حتى يصير التحميل مجاني.</p>
+  <div class="acts" style="margin:0 0 10px"><label class="btn gh">⬆️ ملف صغير<input type="file" hidden onchange="pickFile(this.files[0])"></label><button class="btn gh" onclick="bigHelp()">📦 ملف كبير</button></div>
+  <div id="bigH" class="note" hidden style="background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;line-height:2">
+  1) <a href="${relUrl()}" target="_blank" rel="noopener" style="color:#60a5fa;font-weight:700">افتح صفحة الرفع ↗</a> (من الكمبيوتر أسهل)<br>
+  2) اكتب بخانة <b>Tag</b> أي اسم مثل <code dir="ltr">tools</code> (أول مرة بس، وبعدها اختار نفس الـ Tag)<br>
+  3) اسحب ملف الـ PKG لمربع <b>Attach binaries</b> وانتظر يكمل<br>
+  4) اضغط <b>Publish release</b><br>
+  5) بصفحة الإصدار: كليك يمين (أو ضغط مطوّل) على اسم الملف ← <b>نسخ الرابط</b> ← الصقه بخانة الرابط تحت</div>
   ${f.pending?`<div class="note" style="color:#4ade80;margin-bottom:10px">✓ جاهز للرفع: ${esc(f.name)} (${fmtSize(f.size)}) — راح ينرفع عند الحفظ</div>`:''}
   <div class="field"><label>أو رابط التحميل</label><input class="inp" id="ffU" dir="ltr" value="${esc(f.pending?'':f.url||'')}" placeholder="https://drive.google.com/..."></div>
   <div class="two"><div class="field"><label>اسم الملف</label><input class="inp" id="ffN" dir="ltr" value="${esc(f.name||'')}" placeholder="Tool_v1.2.pkg"></div><div class="field"><label>الحجم (MB)</label><input class="inp" id="ffS" inputmode="decimal" value="${f.size?(f.size/1048576).toFixed(1):''}"></div></div>
   <div class="two"><div class="field"><label>الإصدار</label><input class="inp" id="ffV" dir="ltr" value="${esc(f.version||'')}" placeholder="1.2"></div><div class="field"><label>يشتغل على سوفت</label><input class="inp" id="ffF" dir="ltr" value="${esc(f.fw||'')}" placeholder="9.00 - 11.00"></div></div></div>`}
 let PENDING_FILE=null;
+function relUrl(){const g=gh();return `https://github.com/${g.owner||'mosa-11'}/${g.repo||'store'}/releases/new`}
+function bigHelp(){const e=$('#bigH');e.hidden=!e.hidden}
+// تحويل روابط Google Drive / Dropbox لروابط تحميل مباشر + تعبئة اسم الملف
+function fixLink(u){let m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=download&)?id=)([\w-]{20,})/);if(m)return 'https://drive.usercontent.google.com/download?id='+m[1]+'&export=download&confirm=t';
+  if(/dropbox\.com/.test(u))return u.replace(/[?&]dl=0/,'').replace(/(\?|$)/,(x)=>x==='?'?'?dl=1&':'?dl=1');return u}
 function pickFile(file){if(!file)return;syncForm();if(file.size>50*1048576){toast('الملف أكبر من 50 ميغا، ارفعه على Google Drive وحط الرابط');return}
   if(!cloudMode()){toast('رفع الملفات يحتاج ربط GitHub، حالياً حط رابط');return}
   PENDING_FILE=file;editing.file=Object.assign({},editing.file||{},{name:file.name,size:file.size,pending:true,url:''});route()}
 function syncForm(){if(!editing||!$('#fT'))return;const n=v=>Number(String(v).replace(/[^\d]/g,''))||0;
-  if($('#ffN')){const f=editing.file||{};const u=$('#ffU').value.trim();editing.file={...f,name:$('#ffN').value.trim(),size:Math.round(parseFloat($('#ffS').value||0)*1048576)||f.size||0,version:$('#ffV').value.trim(),fw:$('#ffF').value.trim()};if(u){editing.file.url=u;editing.file.pending=false;PENDING_FILE=null}}Object.assign(editing,{title:$('#fT').value.trim(),cat:$('#fC').value,cond:$('#fD').value,type:$('#fY').value.trim(),price:n($('#fP').value),oldPrice:n($('#fO').value),desc:$('#fS').value.trim(),stock:$('#fK').value,featured:$('#fF').checked,offerEnd:$('#fE').value,video:$('#fV').value.trim(),inst:{down:n($('#fID').value),monthly:n($('#fIM').value),months:n($('#fIN').value)},insp:{clean:$('#fiC').value.trim(),storage:$('#fiS').value.trim(),ctrls:$('#fiP').value.trim(),warranty:$('#fiW').value.trim(),hacked:$('#fiH').value,fw:$('#fiF').value.trim()}})}
+  if($('#ffN')){const f=editing.file||{};const u=fixLink($('#ffU').value.trim());let nm=$('#ffN').value.trim();if(!nm&&u){try{const last=decodeURIComponent(new URL(u).pathname.split('/').pop());if(/\.\w{2,5}$/.test(last))nm=last}catch(x){}}editing.file={...f,name:nm,size:Math.round(parseFloat($('#ffS').value||0)*1048576)||f.size||0,version:$('#ffV').value.trim(),fw:$('#ffF').value.trim()};if(u){editing.file.url=u;editing.file.pending=false;PENDING_FILE=null}}Object.assign(editing,{title:$('#fT').value.trim(),cat:$('#fC').value,cond:$('#fD').value,type:$('#fY').value.trim(),price:n($('#fP').value),oldPrice:n($('#fO').value),desc:$('#fS').value.trim(),stock:$('#fK').value,featured:$('#fF').checked,offerEnd:$('#fE').value,video:$('#fV').value.trim(),inst:{down:n($('#fID').value),monthly:n($('#fIM').value),months:n($('#fIN').value)},insp:{clean:$('#fiC').value.trim(),storage:$('#fiS').value.trim(),ctrls:$('#fiP').value.trim(),warranty:$('#fiW').value.trim(),hacked:$('#fiH').value,fw:$('#fiF').value.trim()}})}
 function compress(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const M=cloudMode()?1200:800;let w=im.width,h=im.height;if(w>M||h>M){const s=M/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);res(c.toDataURL('image/jpeg',cloudMode()?.82:.72))};im.onerror=rej;im.src=r.result};r.onerror=rej;r.readAsDataURL(file)})}
 async function addImgs(files){syncForm();busy(true,'جاري تجهيز الصور...');try{for(const f of files)editing.images.push(await compress(f))}catch(e){toast('تعذر قراءة إحدى الصور')}busy(false);route()}
 function rmImg(i){syncForm();editing.images.splice(i,1);route()}
