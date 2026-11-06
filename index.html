@@ -1893,7 +1893,7 @@ const LB={imgs:[],i:0,s:1,x:0,y:0,pts:new Map(),start:null};
 function openLB(pid,i){const p=DATA.products.find(x=>x.id===pid);LB.imgs=(p.images||[]).filter(Boolean);if(!LB.imgs.length)return;LB.i=i;$('#lb').hidden=false;document.body.style.overflow='hidden';lbShow();history.pushState({lb:1},'')}
 function closeLB(fromPop){if($('#lb').hidden)return;$('#lb').hidden=true;document.body.style.overflow='';if(!fromPop&&history.state&&history.state.lb)history.back()}
 addEventListener('popstate',()=>closeLB(true));
-function lbShow(){const im=$('#lbi');im.src=LB.imgs[LB.i];LB.s=1;LB.x=0;LB.y=0;lbApply();$('#lbc').textContent=(LB.i+1)+' / '+LB.imgs.length;document.querySelectorAll('.lbnav').forEach(b=>b.style.display=LB.imgs.length>1?'':'none')}
+function lbShow(){const im=$('#lbi');im.src=isrc(LB.imgs[LB.i]);LB.s=1;LB.x=0;LB.y=0;lbApply();$('#lbc').textContent=(LB.i+1)+' / '+LB.imgs.length;document.querySelectorAll('.lbnav').forEach(b=>b.style.display=LB.imgs.length>1?'':'none')}
 function lbGo(d){if(LB.imgs.length<2)return;LB.i=(LB.i+d+LB.imgs.length)%LB.imgs.length;lbShow()}
 function lbBase(){const im=$('#lbi'),st=$('#lbs').getBoundingClientRect();return {w:im.offsetWidth,h:im.offsetHeight,ox:(st.width-im.offsetWidth)/2,oy:(st.height-im.offsetHeight)/2,st}}
 function lbClamp(){const b=lbBase();if(LB.s<=1){LB.s=1;LB.x=0;LB.y=0;return}const W=b.w*LB.s,H=b.h*LB.s;
@@ -1934,7 +1934,14 @@ function ph(cat){const c=CATS[cat]||{},k=c.art||cat,col=c.color||ART_COL[k]||'#6
   if(ART[k])return `<div class="ph art" style="--ac:${col}"><span class="glow"></span>${ART[k]}</div>`;
   return `<div class="ph art" style="--ac:${col}"><span class="glow"></span><span class="emo">${esc(k||'🎮')}</span></div>`}
 function mini(cid,sz){return `<div class="mini-art" style="width:${sz}px;height:${sz}px">${ph(cid)}</div>`}
-function img(p,i=0){const s=p.images&&p.images[i];return s?`<img src="${esc(s)}" alt="${esc(p.title)}" loading="lazy">`:ph(p.cat)}
+const IMGC={};try{Object.assign(IMGC,JSON.parse(sessionStorage.getItem('ms_imgc')||'{}'))}catch(e){}
+const isrc=s=>IMGC[s]||s;
+function imgErr(el){const n=+(el.dataset.try||0);el.style.opacity=0;const w=el.closest('.im,.slides,.it,.ci .im,.arow .im');
+  if(!el.nextElementSibling||!el.nextElementSibling.classList.contains('art')){const d=document.createElement('div');d.innerHTML=ph(el.dataset.cat||'');const ph_=d.firstElementChild;ph_.style.cssText='position:absolute;inset:0';el.after(ph_);if(el.parentElement&&getComputedStyle(el.parentElement).position==='static')el.parentElement.style.position='relative'}
+  if(n<8){el.dataset.try=n+1;setTimeout(()=>{el.src=el.dataset.src+(el.dataset.src.includes('?')?'&':'?')+'r='+Date.now()},15000)}}
+function imgOk(el){if(el.dataset.try){el.style.opacity=1;const n=el.nextElementSibling;if(n&&n.classList.contains('art'))n.remove()}}
+function imgTag(s,p,extra=''){const u=isrc(s);return `<img src="${esc(u)}" data-src="${esc(s)}" data-cat="${esc(p?p.cat:'')}" alt="" loading="lazy" onerror="imgErr(this)" onload="imgOk(this)" ${extra}>`}
+function img(p,i=0){const s=p.images&&p.images[i];return s?imgTag(s,p):ph(p.cat)}
 const condTx=c=>c==='new'?'جديد':'مستعمل';
 const STOCK={in:['متوفر','#4ade80'],last:['آخر قطعة','#fb923c'],reserved:['محجوز','#a5b4fc'],out:['نفذت الكمية','#f87171']};
 const canBuy=p=>p.stock!=='out'&&p.stock!=='reserved';
@@ -2039,10 +2046,10 @@ function vProduct(id){
   const off=p.oldPrice>p.price?Math.round((1-p.price/p.oldPrice)*100):0;
   const msg=`مرحباً، أريد أطلب:\n${p.title}\nالحالة: ${condTx(p.cond)}\nالسعر: ${fmt(p.price)}\n${location.href}`;
   return `<button class="back" onclick="history.back()">${I.back} رجوع</button>
-  <div class="pd"><div><div class="gal"><div class="slides" id="sl" onscroll="slideDot(this)">${ims.map((s,i)=>s?`<img src="${esc(s)}" alt="" onclick="openLB('${p.id}',${i})">`:ph(p.cat)).join('')}</div>${p.images&&p.images.length?'<span class="zoomtip">🔍 اضغط للتكبير</span>':''}
+  <div class="pd"><div><div class="gal"><div class="slides" id="sl" onscroll="slideDot(this)">${ims.map((s,i)=>s?imgTag(s,p,`onclick="openLB('${p.id}',${i})"`):ph(p.cat)).join('')}</div>${p.images&&p.images.length?'<span class="zoomtip">🔍 اضغط للتكبير</span>':''}
   ${ims.length>1?`<div class="dots">${ims.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div>`:''}
   <span class="tag t-${p.cond}" style="top:12px;right:12px;font-size:13px">${condTx(p.cond)}</span></div>
-  ${ims.length>1?`<div class="thumbs">${ims.map((s,i)=>`<img src="${esc(s)}" class="${i?'':'on'}" onclick="goSlide(${i})">`).join('')}</div>`:''}</div>
+  ${ims.length>1?`<div class="thumbs">${ims.map((s,i)=>`<img src="${esc(isrc(s))}" class="${i?'':'on'}" onclick="goSlide(${i})">`).join('')}</div>`:''}</div>
   <div><h1>${esc(p.title)}</h1><div class="price">${isFileCat(p.cat)&&!p.price?'<span style="color:#22d3ee">مجاني 🎁</span>':fmt(p.price)}${off?`<s>${fmt(p.oldPrice)}</s> <span class="t-off" style="position:static">-${off}%</span>`:''}</div>
   ${cdn(p)?`<div style="margin-top:8px">${cdn(p)}</div>`:''}
   <div class="specs"><div><small>القسم</small><b>${esc(CATS[p.cat]?.name||'')}</b></div>${isFileCat(p.cat)?'<div><small>النوع</small><b style="color:#22d3ee">📦 ملف</b></div>':`<div><small>الحالة</small><b style="color:${p.cond==='new'?'#4ade80':'#fbbf24'}">${condTx(p.cond)}</b></div>`}<div><small>التوفر</small><b style="color:${(STOCK[p.stock]||STOCK.in)[1]}">${(STOCK[p.stock]||STOCK.in)[0]}</b></div></div>
@@ -2311,7 +2318,7 @@ function editP(id){editing=JSON.parse(JSON.stringify(DATA.products.find(p=>p.id=
 function vForm(){
   const e=editing||(editing=blank());const c=CATS[e.cat]||{types:[]};
   return `<div class="box"><h3 style="margin-top:0">${e.id?'تعديل منتج':'إضافة منتج جديد'}</h3>
-  <div class="field"><label>صور المنتج (أول صورة هي الرئيسية)</label><div class="imgs" id="imgs">${e.images.map((s,i)=>`<div class="it"><img src="${esc(s)}">${i===0?'<span class="main">رئيسية</span>':`<button style="left:auto;right:4px;font-size:11px" onclick="mainImg(${i})" title="جعلها رئيسية">★</button>`}<button onclick="rmImg(${i})">×</button></div>`).join('')}
+  <div class="field"><label>صور المنتج (أول صورة هي الرئيسية)</label><div class="imgs" id="imgs">${e.images.map((s,i)=>`<div class="it"><img src="${esc(isrc(s))}">${i===0?'<span class="main">رئيسية</span>':`<button style="left:auto;right:4px;font-size:11px" onclick="mainImg(${i})" title="جعلها رئيسية">★</button>`}<button onclick="rmImg(${i})">×</button></div>`).join('')}
   <label>＋<br>إضافة صور<input type="file" accept="image/*" multiple hidden onchange="addImgs(this.files)"></label></div></div>
   <div class="field"><label>اسم المنتج *</label><input class="inp" id="fT" value="${esc(e.title)}" placeholder="مثال: بلايستيشن 5 سلم ديسك"></div>
   <div class="two"><div class="field"><label>القسم *</label><select class="inp" id="fC" onchange="syncForm();editing.cat=this.value;editing.type='';route()">${Object.entries(CATS).map(([k,v])=>`<option value="${k}" ${e.cat===k?'selected':''}>${v.name}</option>`).join('')}</select></div>
@@ -2418,7 +2425,7 @@ async function persist(next){
   busy(true,'جاري الرفع إلى GitHub...');
   try{
     let n=0;
-    for(const p of next.products){for(let k=0;k<(p.images||[]).length;k++){const s=p.images[k];if(s&&s.startsWith('data:')){n++;busy(true,`جاري رفع الصورة ${n}...`);const path=`images/${p.id}-${Date.now().toString(36)}${k}.jpg`;await ghPut(path,s.split(',')[1],`صورة: ${p.title}`);p.images[k]=path}}}
+    for(const p of next.products){for(let k=0;k<(p.images||[]).length;k++){const s=p.images[k];if(s&&s.startsWith('data:')){n++;busy(true,`جاري رفع الصورة ${n}...`);const path=`images/${p.id}-${Date.now().toString(36)}${k}.jpg`;await ghPut(path,s.split(',')[1],`صورة: ${p.title}`);p.images[k]=path;IMGC[path]=s;try{sessionStorage.setItem('ms_imgc',JSON.stringify(IMGC))}catch(e){}}}}
     busy(true,'جاري حفظ قائمة المنتجات...');
     await ghPut('products.json',b64(JSON.stringify(next,null,1)),'تحديث المنتجات');
     DATA=next;LS.set('ms_pending',next);LS.set('ms_cache',next);busy(false);return true;
