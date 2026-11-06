@@ -27,20 +27,6 @@
  },
  "products": [
   {
-   "id": "p4",
-   "title": "بلايستيشن 4 سلم 500 جيجا",
-   "cat": "ps4",
-   "type": "Slim",
-   "cond": "new",
-   "price": 340000,
-   "oldPrice": 0,
-   "stock": "in",
-   "featured": false,
-   "desc": "PS4 Slim جديد مع يد أصلية.",
-   "images": [],
-   "created": 1762370000000
-  },
-  {
    "id": "p5",
    "title": "جوستك DualSense أبيض",
    "cat": "controllers",
@@ -161,5 +147,5 @@
    "color": "#f59e0b"
   }
  ],
- "updated": 1794007471390
+ "updated": 1794007475007
 }
