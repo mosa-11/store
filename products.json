@@ -27,28 +27,6 @@
  },
  "products": [
   {
-   "id": "p2",
-   "title": "بلايستيشن 5 فات مستعمل نظيف",
-   "cat": "ps5",
-   "type": "Fat",
-   "cond": "used",
-   "price": 530000,
-   "oldPrice": 0,
-   "stock": "last",
-   "featured": true,
-   "desc": "مستعمل بحالة ممتازة، مفحوص بالكامل، مع يد أصلية وكيبلات.",
-   "images": [],
-   "created": 1762390000000,
-   "insp": {
-    "clean": "95",
-    "storage": "825 جيجا",
-    "ctrls": "1",
-    "warranty": "أسبوعين",
-    "hacked": "no",
-    "fw": "8.40"
-   }
-  },
-  {
    "id": "p3",
    "title": "بلايستيشن 4 برو 1 تيرا",
    "cat": "ps4",
@@ -205,5 +183,5 @@
    "color": "#f59e0b"
   }
  ],
- "updated": 1794007464972
+ "updated": 1794007468189
 }
