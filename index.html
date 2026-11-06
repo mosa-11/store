@@ -1958,9 +1958,9 @@ function card(p){
   ${p.stock==='last'?'<span class="t-last">🔥 آخر قطعة</span>':''}${cdn(p)}${chgBadge(p)}
   ${p.stock==='out'?'<span class="t-out">نفذت الكمية</span>':p.stock==='reserved'?'<span class="t-res">🔒 محجوز</span>':''}
   <button class="fav ${favs.includes(p.id)?'on':''}" data-fav="${p.id}" onclick="toggleFav('${p.id}',event)" aria-label="مفضلة">${I.heart}</button></a>
-  <div class="bd"><a href="#/p/${p.id}"><h3>${esc(p.title)}</h3></a><div class="meta">${esc(CATS[p.cat]?.name||'')}${p.type?' · '+esc(p.type):''}</div>
+  <div class="bd"><a href="#/p/${p.id}"><h3>${esc(p.title)}</h3></a><div class="meta">${esc(CATS[p.cat]?.name||'')}${p.type?' · '+esc(p.type):''}${isFileCat(p.cat)&&p.file?` · 📦 ${p.file.version?'v'+esc(p.file.version):'ملف'}${p.file.size?' · '+fmtSize(p.file.size):''}`:''}</div>
   ${p.inst&&p.inst.monthly?`<div class="inst">💳 تقسيط ${fmt(p.inst.monthly)} شهرياً</div>`:''}
-  <div class="row"><div class="price ${chg(p.id)==='down'||chg(p.id)==='up'?'chg':''}">${fmt(p.price)}</div><button class="add" onclick="addCart('${p.id}')" aria-label="أضف للسلة">${I.plus}</button></div></div></div>`;
+  <div class="row"><div class="price ${chg(p.id)==='down'||chg(p.id)==='up'?'chg':''}">${isFileCat(p.cat)&&!p.price?'<span style="color:#22d3ee">مجاني</span>':fmt(p.price)}</div><button class="add" onclick="addCart('${p.id}')" aria-label="أضف للسلة">${I.plus}</button></div></div></div>`;
 }
 function grid(list){return list.length?`<div class="grid">${list.map(card).join('')}</div>`:`<div class="empty">${I.cart}<div>لا توجد منتجات هنا حالياً</div></div>`}
 function catCards(){return `<div class="cats">${Object.entries(CATS).map(([k,c])=>{const n=DATA.products.filter(p=>p.cat===k).length;return `<a class="cat c-${k}" href="#/cat/${k}"><div class="ic">${ICONS[k]}</div><div><b>${c.name}</b><br><small>${n} منتج · ${c.sub}</small></div></a>`}).join('')}</div>`}
@@ -2002,9 +2002,15 @@ function vHome(){
 
 /* القسم (جديد/مستعمل) والبحث المباشر */
 let S={cond:'all',cat:'all',q:'',sort:'new'};
+const isFileCat=id=>(CATS[id]||{}).kind==='files';
+const fmtSize=b=>!b?'':b<1048576?(b/1024).toFixed(0)+' KB':b<1073741824?(b/1048576).toFixed(1)+' MB':(b/1073741824).toFixed(2)+' GB';
+function fileBox(p){if(!isFileCat(p.cat)||!p.file)return '';const f=p.file;const free=!p.price;
+  return `<div class="ibox" style="background:linear-gradient(135deg,rgba(6,182,212,.22),rgba(79,70,229,.22));border-color:#0891b2"><b>📦 معلومات الملف</b>
+  <div class="lines" style="margin-top:6px">${f.name?`<div><span>اسم الملف</span><b dir="ltr" style="font-size:12.5px">${esc(f.name)}</b></div>`:''}${f.size?`<div><span>الحجم</span><b>${fmtSize(f.size)}</b></div>`:''}${f.version?`<div><span>الإصدار</span><b dir="ltr">${esc(f.version)}</b></div>`:''}${f.fw?`<div><span>يشتغل على سوفت</span><b dir="ltr">${esc(f.fw)}</b></div>`:''}</div>
+  ${free?`<a class="btn full" style="margin-top:10px;background:linear-gradient(135deg,#0891b2,#4f46e5)" href="${esc(f.url)}" ${f.url&&!/^https?:/.test(f.url)?`download="${esc(f.name||'')}"`:'target="_blank" rel="noopener"'}>⬇️ تحميل مجاني</a>`:`<p class="note" style="margin:8px 0 0">🔒 هذا الملف مدفوع، احجزه عبر واتساب ونرسلك رابط التحميل بعد الدفع.</p>`}</div>`}
 function filtered(){
   const q=S.q.trim().toLowerCase();
-  let L=DATA.products.filter(p=>(S.cond==='all'||p.cond===S.cond)&&(S.cat==='all'||p.cat===S.cat)&&(!q||(p.title+' '+p.desc+' '+p.type+' '+(CATS[p.cat]?.name||'')+' '+condTx(p.cond)).toLowerCase().includes(q)));
+  let L=DATA.products.filter(p=>(S.cond==='all'||(p.cond===S.cond&&!isFileCat(p.cat)))&&(S.cat==='all'||p.cat===S.cat)&&(!q||(p.title+' '+p.desc+' '+p.type+' '+(CATS[p.cat]?.name||'')+' '+condTx(p.cond)).toLowerCase().includes(q)));
   return L.sort(S.sort==='low'?(a,b)=>a.price-b.price:S.sort==='high'?(a,b)=>b.price-a.price:(a,b)=>b.created-a.created);
 }
 function renderRes(){const L=filtered();const r=$('#res');if(!r)return;r.innerHTML=`<div class="cnt">${L.length} منتج</div>`+grid(L);document.querySelectorAll('[data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c===S.cat));document.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',b.dataset.k===S.cond))}
@@ -2037,15 +2043,16 @@ function vProduct(id){
   ${ims.length>1?`<div class="dots">${ims.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div>`:''}
   <span class="tag t-${p.cond}" style="top:12px;right:12px;font-size:13px">${condTx(p.cond)}</span></div>
   ${ims.length>1?`<div class="thumbs">${ims.map((s,i)=>`<img src="${esc(s)}" class="${i?'':'on'}" onclick="goSlide(${i})">`).join('')}</div>`:''}</div>
-  <div><h1>${esc(p.title)}</h1><div class="price">${fmt(p.price)}${off?`<s>${fmt(p.oldPrice)}</s> <span class="t-off" style="position:static">-${off}%</span>`:''}</div>
+  <div><h1>${esc(p.title)}</h1><div class="price">${isFileCat(p.cat)&&!p.price?'<span style="color:#22d3ee">مجاني 🎁</span>':fmt(p.price)}${off?`<s>${fmt(p.oldPrice)}</s> <span class="t-off" style="position:static">-${off}%</span>`:''}</div>
   ${cdn(p)?`<div style="margin-top:8px">${cdn(p)}</div>`:''}
-  <div class="specs"><div><small>القسم</small><b>${esc(CATS[p.cat]?.name||'')}</b></div><div><small>الحالة</small><b style="color:${p.cond==='new'?'#4ade80':'#fbbf24'}">${condTx(p.cond)}</b></div><div><small>التوفر</small><b style="color:${(STOCK[p.stock]||STOCK.in)[1]}">${(STOCK[p.stock]||STOCK.in)[0]}</b></div></div>
+  <div class="specs"><div><small>القسم</small><b>${esc(CATS[p.cat]?.name||'')}</b></div>${isFileCat(p.cat)?'<div><small>النوع</small><b style="color:#22d3ee">📦 ملف</b></div>':`<div><small>الحالة</small><b style="color:${p.cond==='new'?'#4ade80':'#fbbf24'}">${condTx(p.cond)}</b></div>`}<div><small>التوفر</small><b style="color:${(STOCK[p.stock]||STOCK.in)[1]}">${(STOCK[p.stock]||STOCK.in)[0]}</b></div></div>
   ${p.type?`<div class="note" style="margin-bottom:10px">النوع: <b style="color:#fff">${esc(p.type)}</b></div>`:''}
   ${p.inst&&p.inst.monthly?`<div class="ibox"><b>💳 متوفر بالتقسيط</b><div class="lines" style="margin-top:6px">${p.inst.down?`<div><span>الدفعة الأولى</span><b>${fmt(p.inst.down)}</b></div>`:''}<div><span>القسط الشهري</span><b>${fmt(p.inst.monthly)}</b></div>${p.inst.months?`<div><span>عدد الأشهر</span><b>${p.inst.months} شهر</b></div>`:''}</div></div>`:''}
   ${inspHtml(p)}
   ${p.desc?`<div class="desc">${esc(p.desc)}</div>`:''}
+  ${fileBox(p)}
   ${p.video?`<a class="btn gh full" style="margin-top:12px" href="${esc(p.video)}" target="_blank" rel="noopener">${I.play} شاهد فيديو الجهاز</a>`:''}
-  <div class="acts"><button class="btn" onclick="addCart('${p.id}')">${I.plus} أضف للسلة</button><button class="btn wa" onclick="bookNow('${p.id}')">${I.wa} احجز الآن</button></div>
+  ${isFileCat(p.cat)&&!p.price?'':`<div class="acts"><button class="btn" onclick="addCart('${p.id}')">${I.plus} أضف للسلة</button><button class="btn wa" onclick="bookNow('${p.id}')">${I.wa} احجز الآن</button></div>`}
   <div class="acts" style="grid-template-columns:1fr 1fr 1fr"><button class="btn gh ${favs.includes(p.id)?'on':''}" data-fav="${p.id}" onclick="toggleFav('${p.id}')" style="padding:11px 6px">${I.heart} مفضلة</button><button class="btn gh" onclick="shareP('${p.id}')" style="padding:11px 6px">${I.share} مشاركة</button><button class="btn gh" onclick="storyImg('${p.id}')" style="padding:11px 6px">${I.img} ستوري</button></div>
   <a class="btn gh full" style="margin-top:10px" href="tel:${esc(DATA.store.phone)}">${I.phone} اتصال مباشر</a>
   </div></div>
@@ -2273,6 +2280,7 @@ function vCatForm(){
   return `<div class="box"><h3 style="margin-top:0">${c.id?'تعديل قسم':'قسم جديد'}</h3>
   <div class="field"><label>اسم القسم *</label><input class="inp" id="kN" value="${esc(c.name)}" placeholder="مثال: أشرطة ألعاب"></div>
   <div class="field"><label>وصف قصير</label><input class="inp" id="kS" value="${esc(c.sub||'')}" placeholder="مثال: أشرطة PS4 و PS5"></div>
+  <div class="field"><label>نوع القسم</label><select class="inp" id="kK"><option value="products" ${c.kind!=='files'?'selected':''}>🛒 منتجات (أجهزة وإكسسوارات)</option><option value="files" ${c.kind==='files'?'selected':''}>📦 ملفات وتحميلات (أدوات PKG)</option></select></div>
   <div class="field"><label>الأنواع داخل القسم (افصل بينها بفاصلة)</label><input class="inp" id="kT" value="${esc((c.types||[]).join('، '))}" placeholder="مثال: PS5، PS4، مستعمل نظيف"></div>
   <div class="field"><label>شكل القسم</label><div class="apick">${Object.keys(ART).map(k=>`<button class="${c.art===k?'on':''}" onclick="syncCat();ecat.art='${k}';route()"><div class="mini-art">${artPrev(k,c.color)}</div>${ART_NAMES[k]||k}</button>`).join('')}</div>
   <div class="two"><div class="field"><label>أو اكتب إيموجي</label><input class="inp" id="kE" value="${ART[c.art]?'':esc(c.art)}" placeholder="🎧 🕹️ 💿 🔌" style="font-size:20px" onchange="syncCat();if(this.value.trim())ecat.art=this.value.trim();route()"></div>
@@ -2281,7 +2289,7 @@ function vCatForm(){
   <div class="acts"><button class="btn gh" onclick="aTab='cats';ecat=null;route()">إلغاء</button><button class="btn" onclick="saveCat()">حفظ القسم</button></div></div>`;
 }
 function artPrev(k,col){const c={art:k,color:col};const save=CATS.__p;CATS.__p=c;const h=`<div class="mini-art" style="width:100%;aspect-ratio:1">${ph('__p')}</div>`;delete CATS.__p;return h}
-function syncCat(){if(!ecat||!$('#kN'))return;ecat.name=$('#kN').value.trim();ecat.sub=$('#kS').value.trim();ecat.types=$('#kT').value.split(/[,،]/).map(x=>x.trim()).filter(Boolean);ecat.color=$('#kC').value}
+function syncCat(){if(!ecat||!$('#kN'))return;ecat.name=$('#kN').value.trim();ecat.sub=$('#kS').value.trim();ecat.types=$('#kT').value.split(/[,،]/).map(x=>x.trim()).filter(Boolean);ecat.color=$('#kC').value;ecat.kind=$('#kK').value}
 async function saveCat(){
   syncCat();const c=ecat;if(!c.name){toast('اكتب اسم القسم');return}
   const next=JSON.parse(JSON.stringify(DATA));
@@ -2311,6 +2319,7 @@ function vForm(){
   <div class="field"><label>النوع</label><input class="inp" id="fY" list="tl" value="${esc(e.type)}" placeholder="اختر أو اكتب"><datalist id="tl">${c.types.map(t=>`<option value="${esc(t)}">`).join('')}</datalist></div>
   <div class="two"><div class="field"><label>السعر (${esc(DATA.store.currency)}) *</label><input class="inp" id="fP" inputmode="numeric" value="${e.price}" placeholder="250000"></div>
   <div class="field"><label>السعر قبل الخصم</label><input class="inp" id="fO" inputmode="numeric" value="${e.oldPrice||''}" placeholder="اختياري"></div></div>
+  ${isFileCat(e.cat)?fileFields(e):''}
   <div class="field"><label>الوصف</label><textarea class="inp" id="fS" placeholder="الحالة، الملحقات، الضمان...">${esc(e.desc)}</textarea></div>
   <div class="field"><label>حالة التوفر</label><select class="inp" id="fK">${Object.entries(STOCK).map(([k,v])=>`<option value="${k}" ${(e.stock||'in')===k?'selected':''}>${v[0]}</option>`).join('')}</select></div>
   <div class="two"><div class="field"><label>⏱ ينتهي العرض في (اختياري)</label><input class="inp" id="fE" type="datetime-local" value="${esc(e.offerEnd||'')}"></div>
@@ -2324,7 +2333,19 @@ function vForm(){
   <label class="sw"><span>عرض في «عروض مميزة»</span><input type="checkbox" id="fF" ${e.featured?'checked':''}></label>
   <div class="acts"><button class="btn gh" onclick="aTab='list';editing=null;route()">إلغاء</button><button class="btn" onclick="saveP()">حفظ المنتج</button></div></div>`;
 }
-function syncForm(){if(!editing||!$('#fT'))return;const n=v=>Number(String(v).replace(/[^\d]/g,''))||0;Object.assign(editing,{title:$('#fT').value.trim(),cat:$('#fC').value,cond:$('#fD').value,type:$('#fY').value.trim(),price:n($('#fP').value),oldPrice:n($('#fO').value),desc:$('#fS').value.trim(),stock:$('#fK').value,featured:$('#fF').checked,offerEnd:$('#fE').value,video:$('#fV').value.trim(),inst:{down:n($('#fID').value),monthly:n($('#fIM').value),months:n($('#fIN').value)},insp:{clean:$('#fiC').value.trim(),storage:$('#fiS').value.trim(),ctrls:$('#fiP').value.trim(),warranty:$('#fiW').value.trim(),hacked:$('#fiH').value,fw:$('#fiF').value.trim()}})}
+function fileFields(e){const f=e.file||{};return `<div class="ibox" style="border-color:#0891b2"><b>📦 الملف</b>
+  <p class="note" style="margin:6px 0 10px">ارفع ملف لحد 50 ميغا (يتخزن بالمتجر)، أو للملفات الكبيرة حط رابط من Google Drive أو MEGA أو تيليكرام. اترك السعر 0 حتى يصير التحميل مجاني.</p>
+  <label class="btn gh full" style="margin-bottom:10px">⬆️ اختيار ملف PKG للرفع<input type="file" hidden onchange="pickFile(this.files[0])"></label>
+  ${f.pending?`<div class="note" style="color:#4ade80;margin-bottom:10px">✓ جاهز للرفع: ${esc(f.name)} (${fmtSize(f.size)}) — راح ينرفع عند الحفظ</div>`:''}
+  <div class="field"><label>أو رابط التحميل</label><input class="inp" id="ffU" dir="ltr" value="${esc(f.pending?'':f.url||'')}" placeholder="https://drive.google.com/..."></div>
+  <div class="two"><div class="field"><label>اسم الملف</label><input class="inp" id="ffN" dir="ltr" value="${esc(f.name||'')}" placeholder="Tool_v1.2.pkg"></div><div class="field"><label>الحجم (MB)</label><input class="inp" id="ffS" inputmode="decimal" value="${f.size?(f.size/1048576).toFixed(1):''}"></div></div>
+  <div class="two"><div class="field"><label>الإصدار</label><input class="inp" id="ffV" dir="ltr" value="${esc(f.version||'')}" placeholder="1.2"></div><div class="field"><label>يشتغل على سوفت</label><input class="inp" id="ffF" dir="ltr" value="${esc(f.fw||'')}" placeholder="9.00 - 11.00"></div></div></div>`}
+let PENDING_FILE=null;
+function pickFile(file){if(!file)return;syncForm();if(file.size>50*1048576){toast('الملف أكبر من 50 ميغا، ارفعه على Google Drive وحط الرابط');return}
+  if(!cloudMode()){toast('رفع الملفات يحتاج ربط GitHub، حالياً حط رابط');return}
+  PENDING_FILE=file;editing.file=Object.assign({},editing.file||{},{name:file.name,size:file.size,pending:true,url:''});route()}
+function syncForm(){if(!editing||!$('#fT'))return;const n=v=>Number(String(v).replace(/[^\d]/g,''))||0;
+  if($('#ffN')){const f=editing.file||{};const u=$('#ffU').value.trim();editing.file={...f,name:$('#ffN').value.trim(),size:Math.round(parseFloat($('#ffS').value||0)*1048576)||f.size||0,version:$('#ffV').value.trim(),fw:$('#ffF').value.trim()};if(u){editing.file.url=u;editing.file.pending=false;PENDING_FILE=null}}Object.assign(editing,{title:$('#fT').value.trim(),cat:$('#fC').value,cond:$('#fD').value,type:$('#fY').value.trim(),price:n($('#fP').value),oldPrice:n($('#fO').value),desc:$('#fS').value.trim(),stock:$('#fK').value,featured:$('#fF').checked,offerEnd:$('#fE').value,video:$('#fV').value.trim(),inst:{down:n($('#fID').value),monthly:n($('#fIM').value),months:n($('#fIN').value)},insp:{clean:$('#fiC').value.trim(),storage:$('#fiS').value.trim(),ctrls:$('#fiP').value.trim(),warranty:$('#fiW').value.trim(),hacked:$('#fiH').value,fw:$('#fiF').value.trim()}})}
 function compress(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const M=cloudMode()?1200:800;let w=im.width,h=im.height;if(w>M||h>M){const s=M/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);res(c.toDataURL('image/jpeg',cloudMode()?.82:.72))};im.onerror=rej;im.src=r.result};r.onerror=rej;r.readAsDataURL(file)})}
 async function addImgs(files){syncForm();busy(true,'جاري تجهيز الصور...');try{for(const f of files)editing.images.push(await compress(f))}catch(e){toast('تعذر قراءة إحدى الصور')}busy(false);route()}
 function rmImg(i){syncForm();editing.images.splice(i,1);route()}
@@ -2332,7 +2353,9 @@ function mainImg(i){syncForm();const [x]=editing.images.splice(i,1);editing.imag
 async function saveP(){
   syncForm();const e=editing;
   if(!e.title){toast('اكتب اسم المنتج');return}
-  if(!e.price){toast('اكتب السعر');return}
+  if(!e.price&&!isFileCat(e.cat)){toast('اكتب السعر');return}
+  if(isFileCat(e.cat)&&!(e.file&&(e.file.url||e.file.pending))){toast('ارفع الملف أو حط رابط التحميل');return}
+  if(e.file&&e.file.pending&&PENDING_FILE){try{const path='files/'+Date.now().toString(36)+'-'+PENDING_FILE.name.replace(/[^\w.\-]+/g,'_');await ghUploadBig(path,PENDING_FILE);e.file.url=path;e.file.pending=false;PENDING_FILE=null}catch(err){busy(false);toast('فشل رفع الملف: '+err.message);return}}
   const isNew=!e.id;
   if(isNew){e.id=uid();e.created=Date.now()}
   const next=JSON.parse(JSON.stringify(DATA));
@@ -2359,6 +2382,21 @@ async function ghApi(path,opt={}){
 async function ghPut(path,content,msg){
   const old=await ghApi(path);const g=gh();
   return ghApi(path,{method:'PUT',body:JSON.stringify({message:msg,content,branch:g.branch,...(old?{sha:old.sha}:{})})});
+}
+async function ghUploadBig(path,file){
+  const g=gh(),api=`https://api.github.com/repos/${g.owner}/${g.repo}/git`,H={Authorization:'Bearer '+g.token,Accept:'application/vnd.github+json','Content-Type':'application/json'};
+  busy(true,'جاري تجهيز الملف...');
+  const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(file)});
+  const blob=await new Promise((res,rej)=>{const x=new XMLHttpRequest();x.open('POST',api+'/blobs');for(const k in H)x.setRequestHeader(k,H[k]);
+    x.upload.onprogress=e=>{if(e.lengthComputable)busy(true,`جاري رفع الملف ${Math.round(e.loaded/e.total*100)}% (${fmtSize(file.size)})`)};
+    x.onload=()=>x.status<300?res(JSON.parse(x.responseText)):rej(new Error(x.status+' '+(JSON.parse(x.responseText||'{}').message||'')));x.onerror=()=>rej(new Error('انقطع الاتصال'));
+    x.send(JSON.stringify({content:b64,encoding:'base64'}))});
+  busy(true,'جاري حفظ الملف بالمتجر...');
+  const j=async(u,o)=>{const r=await fetch(u,{...o,headers:H});const d=await r.json();if(!r.ok)throw new Error(r.status+' '+(d.message||''));return d};
+  const ref=await j(`${api}/ref/heads/${g.branch}`),com=await j(`${api}/commits/${ref.object.sha}`);
+  const tree=await j(`${api}/trees`,{method:'POST',body:JSON.stringify({base_tree:com.tree.sha,tree:[{path,mode:'100644',type:'blob',sha:blob.sha}]})});
+  const nc=await j(`${api}/commits`,{method:'POST',body:JSON.stringify({message:'ملف: '+file.name,tree:tree.sha,parents:[ref.object.sha]})});
+  await j(`${api}/refs/heads/${g.branch}`,{method:'PATCH',body:JSON.stringify({sha:nc.sha})});
 }
 async function persist(next){
   next.updated=Date.now();
