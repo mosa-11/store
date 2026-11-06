@@ -27,28 +27,6 @@
  },
  "products": [
   {
-   "id": "p3",
-   "title": "بلايستيشن 4 برو 1 تيرا",
-   "cat": "ps4",
-   "type": "Pro",
-   "cond": "used",
-   "price": 300000,
-   "oldPrice": 0,
-   "stock": "in",
-   "featured": true,
-   "desc": "PS4 Pro مستعمل نظيف، تنظيف كامل ومعجون حراري جديد.",
-   "images": [],
-   "created": 1762380000000,
-   "insp": {
-    "clean": "90",
-    "storage": "1 تيرا",
-    "ctrls": "1",
-    "warranty": "أسبوع",
-    "hacked": "yes",
-    "fw": "11.00"
-   }
-  },
-  {
    "id": "p4",
    "title": "بلايستيشن 4 سلم 500 جيجا",
    "cat": "ps4",
@@ -183,5 +161,5 @@
    "color": "#f59e0b"
   }
  ],
- "updated": 1794007468189
+ "updated": 1794007471390
 }
