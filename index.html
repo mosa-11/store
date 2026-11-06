@@ -44,10 +44,10 @@ img{display:block}
 .wrap{max-width:1100px;margin:0 auto;padding:0 14px}
 
 /* شريط علوي */
-.top{position:sticky;top:0;z-index:40;background:rgba(11,15,26,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:40;padding-top:env(safe-area-inset-top,0px);background:rgba(11,15,26,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;gap:10px;height:62px}
 .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-.brand img{width:40px;height:40px;border-radius:12px}
+.brand img{width:40px;height:40px;border-radius:12px;-webkit-touch-callout:none;user-select:none}.brand{-webkit-touch-callout:none;user-select:none}
 .brand b{font-size:18px;font-weight:800;display:block;line-height:1.1}
 .brand small{color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .ibtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--tx);display:grid;place-items:center;position:relative;flex:none}
@@ -353,7 +353,7 @@ h4.sub{margin:16px 0 10px;color:#a5b4fc;font-size:14px}
 /* عارض الصور */
 .lb{position:fixed;inset:0;z-index:120;background:rgba(3,5,12,.96);display:flex;flex-direction:column;touch-action:none;animation:fd .2s}
 .lb[hidden]{display:none}
-.lbtop{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;color:#cbd5e1;font-weight:700;position:relative;z-index:2}
+.lbtop{padding-top:calc(12px + env(safe-area-inset-top,0px))!important;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;color:#cbd5e1;font-weight:700;position:relative;z-index:2}
 .lbtop button{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(30,41,59,.8);color:#fff;font-size:18px}
 .lbstage{flex:1;overflow:hidden;display:grid;place-items:center;position:relative}
 .lbstage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:0 0;will-change:transform;user-select:none;-webkit-user-drag:none;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
@@ -2204,26 +2204,33 @@ function vLock(){
   ${needTok?`${d.owner?'':'<input class="inp" id="lO" dir="ltr" placeholder="اسم الحساب" style="margin-bottom:10px"><input class="inp" id="lR" dir="ltr" placeholder="اسم المستودع" style="margin-bottom:10px">'}<input class="inp" id="lT" type="password" dir="ltr" placeholder="github_pat_..." style="margin-bottom:10px">`:''}
   <input class="inp pin" id="pin" type="password" inputmode="numeric" maxlength="12" placeholder="••••" onkeydown="if(event.key==='Enter')login()">
   ${first?'<input class="inp pin" id="pin2" type="password" inputmode="numeric" maxlength="12" placeholder="تأكيد" style="margin-top:10px">':''}
+  <div id="lockE" class="warnb" style="margin-top:12px;text-align:right" hidden></div>
   <button class="btn full" style="margin-top:14px" onclick="login()">دخول</button>
   <a class="btn gh full" style="margin-top:10px" href="#/">رجوع للمتجر</a></div>`;
 }
+function lockErr(m){busy(false);const e=$('#lockE');if(e){e.textContent='⚠️ '+m;e.hidden=false}toast('تعذر الدخول')}
 async function login(){
   const v=$('#pin').value.trim();
-  if(v.length<4){toast('الرمز يجب أن يكون 4 أرقام على الأقل');return}
+  if(v.length<4){lockErr('الرمز السري لازم يكون 4 أرقام أو أكثر');return}
   if(!cfg.pin){
-    if(v!==$('#pin2').value.trim()){toast('الرمزان غير متطابقين');return}
+    if(v!==$('#pin2').value.trim()){lockErr('الرمز السري والتأكيد مو نفس الشي');return}
     if(LIVE){
       const d=detectRepo(),o=d.owner||$('#lO').value.trim(),r=d.repo||$('#lR').value.trim(),t=$('#lT').value.trim();
       if(!t){toast('أدخل التوكن');return}
       busy(true,'جاري التحقق...');
       try{const res=await fetch(`https://api.github.com/repos/${o}/${r}`,{headers:{Authorization:'Bearer '+t}});const j=await res.json();busy(false);
-        if(!res.ok||!(j.permissions&&j.permissions.push)){toast('غير مصرّح لك بالدخول');return}}
-      catch(e){busy(false);toast('تعذر التحقق، تأكد من الإنترنت');return}
+        if(res.status===401){lockErr('التوكن غير صحيح أو منتهي. انسخه من جديد كامل (يبدي بـ github_pat_) بدون مسافات.');return}
+        if(res.status===404){lockErr('ما لكيت المستودع '+o+'/'+r+'. تأكد إن التوكن مسموحله على مستودع store.');return}
+        if(!res.ok){lockErr('خطأ من GitHub ('+res.status+'): '+(j.message||''));return}
+        if(j.permissions&&!j.permissions.push){lockErr('التوكن صحيح بس بدون صلاحية كتابة. بإعدادات التوكن خلّي Contents = Read and write على مستودع store.');return}
+        const tst=await fetch(`https://api.github.com/repos/${o}/${r}/contents/products.json`,{headers:{Authorization:'Bearer '+t}});
+        if(tst.status===401||tst.status===403){lockErr('التوكن ما عنده وصول لمستودع store. بإعدادات التوكن اختار Only select repositories ← store.');return}}
+      catch(e){busy(false);lockErr('تعذر الاتصال بـ GitHub، تأكد من الإنترنت وحاول مرة ثانية.');return}
       Object.assign(cfg,{owner:o,repo:r,token:t});await loadData();
     }
     cfg.pin=await sha(v);LS.set('ms_cfg',cfg);
   }
-  else if(await sha(v)!==cfg.pin){toast('الرمز غير صحيح');return}
+  else if(await sha(v)!==cfg.pin){lockErr('الرمز السري غير صحيح');return}
   adminOK=true;sessionStorage.setItem('ms_admin','1');route();
 }
 function logout(){adminOK=false;sessionStorage.removeItem('ms_admin');location.hash='#/'}
@@ -2565,6 +2572,8 @@ addEventListener('focus',()=>checkUpdates());
 (function(){let y0=null;addEventListener('touchstart',e=>{y0=scrollY<=0&&$('#lb').hidden?e.touches[0].clientY:null},{passive:true});
   addEventListener('touchend',e=>{if(y0!==null&&e.changedTouches[0].clientY-y0>110){checkUpdates(true).then(()=>{if(!$('#live').classList.contains('show'))showLive('المتجر محدّث ✓','عندك آخر الأسعار والمنتجات')})}y0=null},{passive:true})})();
 // دخول سري: اضغط على الشعار 5 مرات متتالية
+(function(){let lp;const b=document.querySelector('.brand');const st=()=>{clearTimeout(lp);lp=setTimeout(()=>{if(navigator.vibrate)navigator.vibrate(30);location.hash='#/admin'},1200)},cl=()=>clearTimeout(lp);
+  b.addEventListener('touchstart',st,{passive:true});b.addEventListener('mousedown',st);['touchend','touchmove','touchcancel','mouseup','mouseleave'].forEach(e=>b.addEventListener(e,cl,{passive:true}))})();
 let taps=0,tapT;function secretTap(){taps++;clearTimeout(tapT);tapT=setTimeout(()=>taps=0,1500);if(taps>=5){taps=0;setTimeout(()=>location.hash='#/admin',50)}}
 
 (function(){const f=$('#bgfx'),sy=['△','○','✕','□'],co=['#4ade80','#f87171','#60a5fa','#f472b6'];for(let i=0;i<14;i++){const e=document.createElement('i');const k=i%4;e.textContent=sy[k];e.style.color=co[k]+'33';e.style.left=(Math.random()*100)+'%';e.style.fontSize=(18+Math.random()*30)+'px';e.style.animationDuration=(14+Math.random()*16)+'s';e.style.animationDelay=(-Math.random()*30)+'s';f.appendChild(e)}})();
