@@ -1,0 +1,238 @@
+{
+ "store": {
+  "name": "موسى احمد",
+  "tagline": "عالم البلايستيشن والألعاب",
+  "phone": "07711866592",
+  "whatsapp": "9647711866592",
+  "address": "بغداد - الرحمانية - الجعيفر",
+  "banner": "أجهزة PS4 و PS5 جديد ومستعمل مفحوصة بالكامل مع ضمان",
+  "currency": "د.ع",
+  "depOn": true,
+  "depLabel": "ماستر كارد",
+  "depNumber": "9757513545",
+  "depMode": "percent",
+  "depValue": 10,
+  "delBaghdad": 5000,
+  "delOther": 8000,
+  "freeOver": 0,
+  "coupons": "",
+  "reviews": "",
+  "closed": false,
+  "closedMsg": "المتجر مغلق حالياً، نرجع قريباً إن شاء الله",
+  "repairOn": true,
+  "tradeOn": true
+ },
+ "products": [
+  {
+   "id": "p9",
+   "title": "بكج PS5 سلم + يد إضافية + سماعة",
+   "cat": "bundles",
+   "type": "PS5",
+   "cond": "new",
+   "price": 930000,
+   "oldPrice": 1000000,
+   "stock": "in",
+   "featured": true,
+   "desc": "بكج كامل: جهاز PS5 Slim ديسك + يد DualSense إضافية + سماعة PULSE 3D.",
+   "images": [],
+   "created": 1762410000000
+  },
+  {
+   "id": "p1",
+   "title": "بلايستيشن 5 سلم - نسخة الديسك",
+   "cat": "ps5",
+   "type": "Slim",
+   "cond": "new",
+   "price": 720000,
+   "oldPrice": 760000,
+   "stock": "in",
+   "featured": true,
+   "desc": "جهاز PS5 Slim جديد بالكرتونة مع يد DualSense أصلية، ذاكرة 1 تيرا.",
+   "images": [],
+   "created": 1762400000000,
+   "inst": {
+    "down": 200000,
+    "monthly": 90000,
+    "months": 6
+   }
+  },
+  {
+   "id": "p2",
+   "title": "بلايستيشن 5 فات مستعمل نظيف",
+   "cat": "ps5",
+   "type": "Fat",
+   "cond": "used",
+   "price": 530000,
+   "oldPrice": 0,
+   "stock": "last",
+   "featured": true,
+   "desc": "مستعمل بحالة ممتازة، مفحوص بالكامل، مع يد أصلية وكيبلات.",
+   "images": [],
+   "created": 1762390000000,
+   "insp": {
+    "clean": "95",
+    "storage": "825 جيجا",
+    "ctrls": "1",
+    "warranty": "أسبوعين",
+    "hacked": "no",
+    "fw": "8.40"
+   }
+  },
+  {
+   "id": "p3",
+   "title": "بلايستيشن 4 برو 1 تيرا",
+   "cat": "ps4",
+   "type": "Pro",
+   "cond": "used",
+   "price": 300000,
+   "oldPrice": 0,
+   "stock": "in",
+   "featured": true,
+   "desc": "PS4 Pro مستعمل نظيف، تنظيف كامل ومعجون حراري جديد.",
+   "images": [],
+   "created": 1762380000000,
+   "insp": {
+    "clean": "90",
+    "storage": "1 تيرا",
+    "ctrls": "1",
+    "warranty": "أسبوع",
+    "hacked": "yes",
+    "fw": "11.00"
+   }
+  },
+  {
+   "id": "p4",
+   "title": "بلايستيشن 4 سلم 500 جيجا",
+   "cat": "ps4",
+   "type": "Slim",
+   "cond": "new",
+   "price": 340000,
+   "oldPrice": 0,
+   "stock": "in",
+   "featured": false,
+   "desc": "PS4 Slim جديد مع يد أصلية.",
+   "images": [],
+   "created": 1762370000000
+  },
+  {
+   "id": "p5",
+   "title": "جوستك DualSense أبيض",
+   "cat": "controllers",
+   "type": "PS5",
+   "cond": "new",
+   "price": 95000,
+   "oldPrice": 110000,
+   "stock": "in",
+   "featured": true,
+   "desc": "يد PS5 أصلية جديدة بالكرتونة.",
+   "images": [],
+   "created": 1762360000000,
+   "offerEnd": "2026-11-20T23:59"
+  },
+  {
+   "id": "p6",
+   "title": "جوستك DualShock 4 مستعمل",
+   "cat": "controllers",
+   "type": "PS4",
+   "cond": "used",
+   "price": 35000,
+   "oldPrice": 0,
+   "stock": "in",
+   "featured": false,
+   "desc": "يد PS4 أصلية مستعملة مفحوصة ومعايرة.",
+   "images": [],
+   "created": 1762350000000
+  },
+  {
+   "id": "p7",
+   "title": "جوستك اكس بوكس سيريس",
+   "cat": "controllers",
+   "type": "Xbox",
+   "cond": "new",
+   "price": 85000,
+   "oldPrice": 0,
+   "stock": "in",
+   "featured": false,
+   "desc": "يد Xbox Series أصلية جديدة.",
+   "images": [],
+   "created": 1762340000000
+  },
+  {
+   "id": "p8",
+   "title": "سماعة PULSE 3D",
+   "cat": "headsets",
+   "type": "",
+   "cond": "new",
+   "price": 120000,
+   "oldPrice": 0,
+   "stock": "in",
+   "featured": true,
+   "desc": "سماعة لاسلكية أصلية من سوني تدعم الصوت ثلاثي الأبعاد.",
+   "images": [],
+   "created": 1762330000000
+  }
+ ],
+ "cats": [
+  {
+   "id": "ps4",
+   "name": "بليات PS4",
+   "sub": "جديد ومستعمل",
+   "types": [
+    "Slim",
+    "Pro",
+    "Fat"
+   ],
+   "art": "ps4",
+   "color": "#6366f1"
+  },
+  {
+   "id": "ps5",
+   "name": "بليات PS5",
+   "sub": "جديد ومستعمل",
+   "types": [
+    "Slim",
+    "Fat",
+    "Pro",
+    "Digital"
+   ],
+   "art": "ps5",
+   "color": "#3b82f6"
+  },
+  {
+   "id": "controllers",
+   "name": "الجوستكات",
+   "sub": "كل الأنواع",
+   "types": [
+    "PS5",
+    "PS4",
+    "Xbox",
+    "PC/موبايل",
+    "أخرى"
+   ],
+   "art": "controllers",
+   "color": "#a855f7"
+  },
+  {
+   "id": "headsets",
+   "name": "السماعات",
+   "sub": "سلكية ولاسلكية",
+   "types": [
+    "لاسلكية",
+    "سلكية"
+   ],
+   "art": "headsets",
+   "color": "#14b8a6"
+  },
+  {
+   "id": "bundles",
+   "name": "بكجات وعروض",
+   "sub": "جهاز + إكسسوارات",
+   "types": [
+    "PS5",
+    "PS4"
+   ],
+   "art": "bundles",
+   "color": "#f59e0b"
+  }
+ ]
+}
