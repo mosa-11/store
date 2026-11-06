@@ -2201,7 +2201,7 @@ const LIVE=location.hostname.endsWith('.github.io');
 function vLock(){
   const first=!cfg.pin, d=detectRepo(), needTok=first&&LIVE;
   return `<div class="lock">${I.lock}<h2>${first?'تفعيل لوحة التحكم':'دخول الإدارة'}</h2><p class="note">${needTok?'هذه الصفحة خاصة بصاحب المتجر فقط. أدخل مفتاح GitHub (التوكن) الخاص بك ثم اختر رمزاً سرياً لهذا الجهاز.':first?'اختر رمزاً سرياً (4 أرقام أو أكثر).':'أدخل الرمز السري للدخول إلى لوحة التحكم.'}</p>
-  ${needTok?`${d.owner?'':'<input class="inp" id="lO" dir="ltr" placeholder="اسم الحساب" style="margin-bottom:10px"><input class="inp" id="lR" dir="ltr" placeholder="اسم المستودع" style="margin-bottom:10px">'}<input class="inp" id="lT" type="password" dir="ltr" placeholder="github_pat_..." style="margin-bottom:10px">`:''}
+  ${needTok?`${d.owner?'':'<input class="inp" id="lOwn" dir="ltr" placeholder="اسم الحساب" style="margin-bottom:10px"><input class="inp" id="lRep" dir="ltr" placeholder="اسم المستودع" style="margin-bottom:10px">'}<input class="inp" id="lTok" type="password" dir="ltr" placeholder="github_pat_..." style="margin-bottom:10px">`:''}
   <input class="inp pin" id="pin" type="password" inputmode="numeric" maxlength="12" placeholder="••••" onkeydown="if(event.key==='Enter')login()">
   ${first?'<input class="inp pin" id="pin2" type="password" inputmode="numeric" maxlength="12" placeholder="تأكيد" style="margin-top:10px">':''}
   <div id="lockE" class="warnb" style="margin-top:12px;text-align:right" hidden></div>
@@ -2215,7 +2215,7 @@ async function login(){
   if(!cfg.pin){
     if(v!==$('#pin2').value.trim()){lockErr('الرمز السري والتأكيد مو نفس الشي');return}
     if(LIVE){
-      const d=detectRepo(),o=d.owner||$('#lO').value.trim(),r=d.repo||$('#lR').value.trim(),t=$('#lT').value.trim();
+      const d=detectRepo(),o=d.owner||$('#lOwn').value.trim(),r=d.repo||$('#lRep').value.trim(),t=$('#lTok').value.trim();
       if(!t){toast('أدخل التوكن');return}
       busy(true,'جاري التحقق...');
       try{const res=await fetch(`https://api.github.com/repos/${o}/${r}`,{headers:{Authorization:'Bearer '+t}});const j=await res.json();busy(false);
