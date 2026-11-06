@@ -25,7 +25,39 @@
   "repairOn": true,
   "tradeOn": true
  },
- "products": [],
+ "products": [
+  {
+   "id": "mw5lxmd9f674",
+   "title": "كفر جوستكps5",
+   "cat": "cmw5lvx13",
+   "type": "كفر اصلي",
+   "cond": "new",
+   "price": 45000,
+   "oldPrice": 50000,
+   "stock": "in",
+   "featured": false,
+   "desc": "كامل ملحقاتة من شفقات وكبات",
+   "images": [
+    "images/mw5lxmd9f674-mw5lxmd90.jpg"
+   ],
+   "video": "",
+   "offerEnd": "",
+   "inst": {
+    "down": 0,
+    "monthly": 0,
+    "months": 0
+   },
+   "insp": {
+    "clean": "",
+    "storage": "",
+    "ctrls": "",
+    "warranty": "",
+    "hacked": "",
+    "fw": ""
+   },
+   "created": 1794007816317
+  }
+ ],
  "cats": [
   {
    "id": "ps4",
@@ -100,5 +132,5 @@
    "kind": "products"
   }
  ],
- "updated": 1794007736823
+ "updated": 1794007816317
 }
