@@ -19,24 +19,13 @@
   "reviews": "",
   "closed": false,
   "closedMsg": "المتجر مغلق حالياً، نرجع قريباً إن شاء الله",
+  "tickerOn": true,
+  "ticker": "🔥 أجهزة PS5 و PS4 جديد ومستعمل بأفضل الأسعار\n🚚 توصيل لكل محافظات العراق\n🛠️ صيانة البليات والجوستكات بأيدي خبيرة",
+  "siteUrl": "",
   "repairOn": true,
   "tradeOn": true
  },
  "products": [
-  {
-   "id": "p9",
-   "title": "بكج PS5 سلم + يد إضافية + سماعة",
-   "cat": "bundles",
-   "type": "PS5",
-   "cond": "new",
-   "price": 930000,
-   "oldPrice": 1000000,
-   "stock": "in",
-   "featured": true,
-   "desc": "بكج كامل: جهاز PS5 Slim ديسك + يد DualSense إضافية + سماعة PULSE 3D.",
-   "images": [],
-   "created": 1762410000000
-  },
   {
    "id": "p1",
    "title": "بلايستيشن 5 سلم - نسخة الديسك",
@@ -234,5 +223,6 @@
    "art": "bundles",
    "color": "#f59e0b"
   }
- ]
+ ],
+ "updated": 1794007461856
 }
