@@ -87,7 +87,18 @@
    ],
    "art": "bundles",
    "color": "#f59e0b"
+  },
+  {
+   "id": "cmw5lvx13",
+   "name": "كفرات",
+   "sub": "كلشي يخص كفرات ps5",
+   "types": [
+    "كفرات"
+   ],
+   "art": "كفر ps5",
+   "color": "#6366f1",
+   "kind": "products"
   }
  ],
- "updated": 1794007611995
+ "updated": 1794007736823
 }
