@@ -27,21 +27,6 @@
  },
  "products": [
   {
-   "id": "p5",
-   "title": "جوستك DualSense أبيض",
-   "cat": "controllers",
-   "type": "PS5",
-   "cond": "new",
-   "price": 95000,
-   "oldPrice": 110000,
-   "stock": "in",
-   "featured": true,
-   "desc": "يد PS5 أصلية جديدة بالكرتونة.",
-   "images": [],
-   "created": 1762360000000,
-   "offerEnd": "2026-11-20T23:59"
-  },
-  {
    "id": "p6",
    "title": "جوستك DualShock 4 مستعمل",
    "cat": "controllers",
@@ -147,5 +132,5 @@
    "color": "#f59e0b"
   }
  ],
- "updated": 1794007475007
+ "updated": 1794007478107
 }
