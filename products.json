@@ -27,20 +27,6 @@
  },
  "products": [
   {
-   "id": "p6",
-   "title": "جوستك DualShock 4 مستعمل",
-   "cat": "controllers",
-   "type": "PS4",
-   "cond": "used",
-   "price": 35000,
-   "oldPrice": 0,
-   "stock": "in",
-   "featured": false,
-   "desc": "يد PS4 أصلية مستعملة مفحوصة ومعايرة.",
-   "images": [],
-   "created": 1762350000000
-  },
-  {
    "id": "p7",
    "title": "جوستك اكس بوكس سيريس",
    "cat": "controllers",
@@ -132,5 +118,5 @@
    "color": "#f59e0b"
   }
  ],
- "updated": 1794007478107
+ "updated": 1794007481007
 }
