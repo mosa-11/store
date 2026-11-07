@@ -1,5 +1,5 @@
 // خدمة العمل بدون إنترنت - متجر موسى احمد
-const CACHE = 'mousa-store-v13';
+const CACHE = 'mousa-store-v14';
 const SHELL = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {

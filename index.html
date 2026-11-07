@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0b0f1a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -38,6 +38,9 @@
 html{background:#070a14}body{margin:0;background:transparent}html,body{color:var(--tx);font-family:Cairo,Tahoma,system-ui,sans-serif}
 body{min-height:100vh;padding-bottom:calc(76px + var(--safe))}
 button,input,select,textarea{font-family:inherit;font-size:15px}
+html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+a,button,input,select,textarea,label{touch-action:manipulation}
+input,select,textarea{font-size:16px!important}
 button{cursor:pointer}
 a{color:inherit;text-decoration:none}
 img{display:block}
@@ -326,7 +329,7 @@ h4.sub{margin:16px 0 10px;color:#a5b4fc;font-size:14px}
 .pc.lit:before,.svc a.lit:before{opacity:1}
 .cd.lit,.hcats a.lit .mini-art{filter:brightness(1.18)}
 /* استجابة فورية للمس */
-html{touch-action:manipulation}
+html{touch-action:pan-x pan-y}
 .pc,.cd,.svc a,.hcats a,.btn,.chip,.add,.ibtn,.mini,.nav a,.fav,.ci,.arow,.crow{transition:transform .08s ease-out,filter .08s,box-shadow .2s,border-color .15s!important}
 .pc:active,.cd:active,.svc a:active,.hcats a:active,.ci:active{transform:scale(.965)!important;filter:brightness(1.15)}
 .btn:active,.chip:active,.ibtn:active,.mini:active,.fav:active{transform:scale(.93)!important;filter:brightness(1.2)}
@@ -2660,6 +2663,13 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdat
 addEventListener('online',()=>checkUpdates());
 addEventListener('focus',()=>checkUpdates());
 // سحب للأسفل للتحديث (بالموبايل)
+/* الواجهة ثابتة: منع التكبير والتصغير (عدا عارض الصور) */
+(function(){const inLB=e=>e.target&&e.target.closest&&e.target.closest('#lb');
+  ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>{if(!inLB(e))e.preventDefault()},{passive:false}));
+  document.addEventListener('touchmove',e=>{if(e.touches.length>1&&!inLB(e))e.preventDefault()},{passive:false});
+  addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+  addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['+','=','-','_','0'].includes(e.key))e.preventDefault()});
+})();
 (function(){let y0=null;addEventListener('touchstart',e=>{y0=scrollY<=0&&$('#lb').hidden?e.touches[0].clientY:null},{passive:true});
   addEventListener('touchend',e=>{if(y0!==null&&e.changedTouches[0].clientY-y0>110){checkUpdates(true).then(()=>{if(!$('#live').classList.contains('show'))showLive('المتجر محدّث ✓','عندك آخر الأسعار والمنتجات')})}y0=null},{passive:true})})();
 // دخول سري: اضغط على الشعار 5 مرات متتالية
